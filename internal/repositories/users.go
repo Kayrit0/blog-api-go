@@ -6,9 +6,9 @@ import (
 	"github.com/Kayrit0/blog-api-go/internal/entities"
 )
 
-func (r *Repository) GetUsers() ([]entities.User, error) {
-	query := `SELECT id, username, email, password, created_at, updated_at FROM users ORDER BY created_at DESC`
-	rows, err := r.db.Query(context.Background(), query)
+func (r *Repository) GetUsers(offset, limit int) ([]entities.User, error) {
+	query := `SELECT id, username, email, password, created_at, updated_at FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2`
+	rows, err := r.db.Query(context.Background(), query, limit, offset)
 	if err != nil {
 		return nil, err
 	}
