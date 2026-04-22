@@ -19,14 +19,14 @@ func Setup(services *services.Service) *gin.Engine {
 	{
 		auth := v1.Group("/auth")
 		{
-			auth.POST("/register")
-			auth.POST("/login")
-			auth.POST("/logout")
+			auth.POST("/register", h.RegisterAccount)
+			auth.POST("/login", h.LogInAccount)
+			auth.POST("/logout", h.LogOutAccount)
 		}
 
 		users := v1.Group("/users")
 		{
-			users.GET("/")
+			users.GET("/", h.GetAllUsers)
 			users.GET("/:id")
 			users.PUT("/:id")
 		}
