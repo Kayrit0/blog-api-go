@@ -15,11 +15,13 @@ func (h *Handler) RegisterAccount(ctx *gin.Context) {
 		return
 	}
 
-	if err := h.service.RegisterAccount(creds); err != nil {
+	token, err := h.service.RegisterAccount(creds)
+	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	ctx.SetCookie("token", token, 86400, "/", "", false, true)
 	ctx.JSON(http.StatusCreated, gin.H{"message": "account created successfully"})
 }
 
@@ -37,20 +39,11 @@ func (h *Handler) LogInAccount(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"token": token})
+	ctx.SetCookie("token", token, 86400, "/", "", false, true)
+	ctx.JSON(http.StatusOK, gin.H{"message": "logged in successfully"})
 }
 
 func (h *Handler) LogOutAccount(ctx *gin.Context) {
-	token := ctx.GetHeader("Authorization")
-	if token == "" {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "authorization header required"})
-		return
-	}
-
-	if err := h.service.LogOutAccount(token); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
+	ctx.SetCookie("token", "", -1, "/", "", false, true)
 	ctx.JSON(http.StatusOK, gin.H{"message": "logged out successfully"})
 }

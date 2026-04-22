@@ -40,6 +40,16 @@ func (r *Repository) GetUserByID(id uint) (*entities.User, error) {
 	return &user, nil
 }
 
+func (r *Repository) GetUserByEmail(email string) (*entities.User, error) {
+	query := `SELECT id, username, email, password, created_at, updated_at FROM users WHERE email = $1`
+	var user entities.User
+	err := r.db.QueryRow(context.Background(), query, email).Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (r *Repository) CreateUser(user *entities.User) error {
 	query := `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, created_at, updated_at`
 	return r.db.QueryRow(context.Background(), query, user.Username, user.Email, user.Password).Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)

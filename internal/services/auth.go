@@ -2,19 +2,47 @@ package services
 
 import (
 	"github.com/Kayrit0/blog-api-go/internal/entities"
+	"github.com/Kayrit0/blog-api-go/internal/libs"
 )
 
-func (s *Service) RegisterAccount(creds *entities.RegistrationCreds) error {
-	// TODO: implement registration logic
-	return nil
+func (s *Service) RegisterAccount(creds *entities.RegistrationCreds) (string, error) {
+	hashedPass, err := libs.HashPass(creds.Password)
+	if err != nil {
+		return "", err
+	}
+
+	user := &entities.User{
+		Email:    creds.Email,
+		Username: creds.Username,
+		Password: hashedPass,
+	}
+
+	if err := s.repository.CreateUser(user); err != nil {
+		return "", err
+	}
+
+	token, err := libs.CreateJWT(user)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
 func (s *Service) LogInAccount(creds *entities.LogInCreds) (string, error) {
-	// TODO: implement login logic
-	return "", nil
-}
+	user, err := s.repository.GetUserByEmail(creds.Email)
+	if err != nil {
+		return "", err
+	}
 
-func (s *Service) LogOutAccount(token string) error {
-	// TODO: implement logout logic
-	return nil
+	if err := libs.ComparePass(creds.Password, user.Password); err != nil {
+		return "", err
+	}
+
+	token, err := libs.CreateJWT(user)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
