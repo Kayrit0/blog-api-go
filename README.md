@@ -178,6 +178,9 @@ golangci-lint run
 ```
 
 ### Database migrations
+
+**Installation:** Follow the [Goose installation guide](https://pressly.github.io/goose/installation/) to install the migration tool.
+
 ```bash
 # Create new migration
 goose create migration_name sql
