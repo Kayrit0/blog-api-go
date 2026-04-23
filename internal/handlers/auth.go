@@ -8,6 +8,11 @@ import (
 )
 
 func (h *Handler) RegisterAccount(ctx *gin.Context) {
+	if token, err := ctx.Cookie("token"); err == nil && token != "" {
+		ctx.JSON(http.StatusOK, gin.H{"message": "already logged in"})
+		return
+	}
+
 	creds := &entities.RegistrationCreds{}
 
 	if err := ctx.ShouldBindJSON(creds); err != nil {
@@ -26,6 +31,11 @@ func (h *Handler) RegisterAccount(ctx *gin.Context) {
 }
 
 func (h *Handler) LogInAccount(ctx *gin.Context) {
+	if token, err := ctx.Cookie("token"); err == nil && token != "" {
+		ctx.JSON(http.StatusOK, gin.H{"message": "already logged in"})
+		return
+	}
+
 	creds := &entities.LogInCreds{}
 
 	if err := ctx.ShouldBindJSON(creds); err != nil {
