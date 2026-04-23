@@ -14,12 +14,16 @@ type Config struct {
 func LoadConfig() *Config {
 	config := &Config{}
 
-	if err := godotenv.Load(); err != nil {
-		panic("Error loading .env file")
-	}
-
 	config.DB_URL = os.Getenv("DB_URL")
 	config.JWT_SECRET = os.Getenv("JWT_SECRET")
+
+	if config.DB_URL == "" || config.JWT_SECRET == "" {
+		if err := godotenv.Load(); err != nil {
+			panic("Error loading .env file")
+		}
+		config.DB_URL = os.Getenv("DB_URL")
+		config.JWT_SECRET = os.Getenv("JWT_SECRET")
+	}
 
 	return config
 }
