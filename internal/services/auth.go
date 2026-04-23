@@ -15,6 +15,7 @@ func (s *Service) RegisterAccount(creds *entities.RegistrationCreds) (string, er
 		Email:    creds.Email,
 		Username: creds.Username,
 		Password: hashedPass,
+		Role:     entities.RoleUser,
 	}
 
 	if err := s.repository.CreateUser(user); err != nil {
