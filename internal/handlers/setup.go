@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"time"
+
 	"github.com/Kayrit0/blog-api-go/internal/entities"
 	"github.com/Kayrit0/blog-api-go/internal/middleware"
 	"github.com/Kayrit0/blog-api-go/internal/services"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +19,16 @@ func Setup(services *services.Service) *gin.Engine {
 	h := &Handler{service: services}
 
 	routes := gin.Default()
+
+	// CORS configuration
+	routes.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	v1 := routes.Group("/api/v1")
 	{
