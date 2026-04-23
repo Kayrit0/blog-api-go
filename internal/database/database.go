@@ -12,5 +12,12 @@ func CreatePool(cfg *libs.Config) *pgxpool.Pool {
 	if err != nil {
 		panic(err)
 	}
+	if err := dbpool.Ping(context.Background()); err != nil {
+		panic(err)
+	}
 	return dbpool
+}
+
+func HealthCheck(pool *pgxpool.Pool) error {
+	return pool.Ping(context.Background())
 }
