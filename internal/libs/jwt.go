@@ -11,9 +11,10 @@ import (
 var jwtSecret = []byte(LoadConfig().JWT_SECRET)
 
 type Claims struct {
-	UserID   uint   `json:"user_id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	UserID   uint              `json:"user_id"`
+	Username string            `json:"username"`
+	Email    string            `json:"email"`
+	Role     entities.UserRole `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -22,6 +23,7 @@ func CreateJWT(user *entities.User) (string, error) {
 		UserID:   user.ID,
 		Username: user.Username,
 		Email:    user.Email,
+		Role:     user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -68,6 +70,7 @@ func ParseJWT(tokenString string) (entities.User, error) {
 			ID:       claims.UserID,
 			Username: claims.Username,
 			Email:    claims.Email,
+			Role:     claims.Role,
 		}, nil
 	}
 
